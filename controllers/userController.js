@@ -1,14 +1,17 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+
+const upload = multer();
 
 exports.registerUser = (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, nrp, password, role } = req.body;
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       return res.status(500).json({ message: 'Failed to hash password' });
     }
-    db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, hashedPassword, role], (err, results) => {
+    db.query('INSERT INTO users (name, nrp, password, role) VALUES (?, ?, ?, ?)', [name, nrp, hashedPassword, role], (err, results) => {
       if (err) {
         return res.status(500).json({ message: 'Failed to register user' });
       }
@@ -17,9 +20,9 @@ exports.registerUser = (req, res) => {
   });
 };
 
-exports.loginUser = (req, res) => {
-  const { email, password } = req.body;
-  db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+exports.loginUser = [upload.none(), (req, res) => {
+  const { nrp, password } = req.body;
+  db.query('SELECT * FROM users WHERE nrp = ?', [nrp], (err, results) => {
     if (err || results.length === 0) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -34,4 +37,4 @@ exports.loginUser = (req, res) => {
       res.json({ token });
     });
   });
-};
+}];
