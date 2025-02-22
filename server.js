@@ -14,7 +14,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/status', statusRoutes);
-
+app.use('/api/uploads', express.static('uploads'));
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
