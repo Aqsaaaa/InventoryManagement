@@ -28,7 +28,7 @@ exports.getItems = (req, res) => {
   db.query('SELECT * FROM items', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.status(200).json(results);
-  });
+  }); 
 };
 
 exports.getItemById = (req, res) => {
