@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
 exports.addHistory = (req, res) => {
-  const { id_barang, nama_barang, status, name, nama_peminjam, jumlah_yang_dipinjam, alasan } = req.body;
+  const { id_barang, nama_barang, status, nama_peminjam, jumlah_yang_dipinjam, alasan } = req.body;
 
   db.query(
-    'INSERT INTO history (id_barang, nama_barang, status, name, nama_peminjam, jumlah_yang_dipinjam, alasan) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [id_barang, nama_barang, status, name, nama_peminjam, jumlah_yang_dipinjam, alasan],
+    'INSERT INTO history (id_barang, nama_barang, status, nama_peminjam, jumlah_yang_dipinjam, alasan) VALUES (?, ?, ?, ?, ?, ?)',
+    [id_barang, nama_barang, status, nama_peminjam, jumlah_yang_dipinjam, alasan],
     (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ message: 'History added successfully' });

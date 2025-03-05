@@ -1,5 +1,7 @@
 const db = require('../config/db');
 const multer = require('multer');
+
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
@@ -13,9 +15,9 @@ const upload = multer({ storage: storage });
 
 exports.addItem = [upload.single('image'), (req, res) => {
   const { nama, kategori, jumlah, deskripsi, status } = req.body;
-  const image = req.file ? req.file.filename : null; 
+  const image = req.file ? req.file.filename : null;
   db.query(
-    'INSERT INTO items (nama, kategori, jumlah, deskripsi, status, image) VALUES (?, ?, ?, ?, ?, ?)', 
+    'INSERT INTO items (nama, kategori, jumlah, deskripsi, status, image) VALUES (?, ?, ?, ?, ?, ?)',
     [nama, kategori, jumlah, deskripsi, status, image],
     (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -27,16 +29,27 @@ exports.addItem = [upload.single('image'), (req, res) => {
 exports.getItems = (req, res) => {
   db.query('SELECT * FROM items', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(200).json(results);
-  }); 
+    const items = results.map(item => {
+      if (item.image) {
+        item.image = `${req.protocol}://${req.get('host')}/api/uploads/${item.image}`;
+      }
+      return item;
+    });
+    res.status(200).json(items);
+  });
 };
+
 
 exports.getItemById = (req, res) => {
   const id = req.params.id;
   db.query('SELECT * FROM items WHERE id = ?', [id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!results.length) return res.status(404).json({ error: 'Item not found' });
-    res.status(200).json(results[0]);
+    const item = results[0];
+    if (item.image) {
+      item.image = `${req.protocol}://${req.get('host')}/api/uploads/${item.image}`;
+    }
+    res.status(200).json(item);
   });
 };
 
